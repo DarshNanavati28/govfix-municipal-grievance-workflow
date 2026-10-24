@@ -40,7 +40,7 @@ The resident intake suggestion is a transparent keyword recommendation. The resi
 | Standard | 5 days |
 | Low | 7 days |
 
-A deadline is set once when the resident submits the request. When an open request misses its target, GovFix preserves its workflow state, routes it to the Ward Supervisor, and records the escalation. Reopened requests receive a fresh target based on their original priority. The case queue also checks for overdue work when it loads; Vercel Cron provides a scheduled hourly check after deployment.
+A deadline is set once when the resident submits the request. When an open request misses its target, GovFix preserves its workflow state, routes it to the Ward Supervisor, and records the escalation. Reopened requests receive a fresh target based on their original priority. The case queue also checks for overdue work when it loads; Vercel Cron provides a scheduled daily check after deployment (UTC); the request queue also checks for overdue cases when it loads.
 
 ## Data and deployment
 
