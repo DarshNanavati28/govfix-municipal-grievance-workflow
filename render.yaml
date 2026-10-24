@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: govfix-municipal-workflow
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+      - key: GOVFIX_SESSION_SECRET
+        generateValue: true
+      - key: GOVFIX_DEMO_PASSWORD
+        sync: false
+      - key: CRON_SECRET
+        generateValue: true

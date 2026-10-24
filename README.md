@@ -40,11 +40,18 @@ The resident intake suggestion is a transparent keyword recommendation. The resi
 | Standard | 5 days |
 | Low | 7 days |
 
-A deadline is set once when the resident submits the request. When an open request misses its target, GovFix preserves its workflow state, routes it to the Ward Supervisor, and records the escalation. Reopened requests receive a fresh target based on their original priority. The case queue also checks for overdue work when it loads; Vercel Cron provides a scheduled daily check after deployment (UTC); the request queue also checks for overdue cases when it loads.
+A deadline is set once when the resident submits the request. When an open request misses its target, GovFix preserves its workflow state, routes it to the Ward Supervisor, and records the escalation. Reopened requests receive a fresh target based on their original priority. The case queue also checks for overdue work when it loads. A protected endpoint at `/api/cron/escalate` is available for a scheduler; Vercel deployments can use the daily schedule in `vercel.json` (UTC).
 
 ## Data and deployment
 
-Local development uses a SQLite-compatible libSQL file. Vercel functions are stateless, so production requires a persistent Turso database. Create a database in Turso, then configure these Vercel environment variables for Production and Preview:
+Local development uses a SQLite-compatible libSQL file. Hosted instances need a persistent Turso database. To deploy on Render:
+
+1. Create a Turso database and generate an auth token.
+2. In Render, choose **New → Blueprint** and connect this public GitHub repository: `https://github.com/DarshNanavati28/govfix-municipal-grievance-workflow`.
+3. When prompted, enter `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, and a private `GOVFIX_DEMO_PASSWORD`. Render generates the session and scheduler secrets.
+4. Create the Blueprint. Render builds the app and provides its public `onrender.com` URL. Free web services may sleep when idle; Turso keeps the case data persistent.
+
+The same app can also be deployed to Vercel. Create a database in Turso, then configure these Vercel environment variables for Production and Preview:
 
 - `TURSO_DATABASE_URL`
 - `TURSO_AUTH_TOKEN`
@@ -52,7 +59,7 @@ Local development uses a SQLite-compatible libSQL file. Vercel functions are sta
 - `GOVFIX_DEMO_PASSWORD` — use a unique demo value
 - `CRON_SECRET` — use a unique random value
 
-Then link this project to Vercel and deploy. The hourly scheduled handler is `/api/cron/escalate`. A missing or invalid database secret prevents the scheduled endpoint from running.
+Then link this project to Vercel and deploy. The daily scheduled handler is `/api/cron/escalate`. A missing or invalid database secret prevents the scheduled endpoint from running.
 
 This is a challenge prototype. Before a real municipal launch, replace the shared demo personas with the institution’s identity provider and connect the app to its approved data-retention, privacy, accessibility, and security controls.
 
