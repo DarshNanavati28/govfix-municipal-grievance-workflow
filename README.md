@@ -2,6 +2,22 @@
 
 GovFix is a configurable workflow engine for **municipal grievance resolution**. It gives residents a request portal and municipal teams a role-aware queue, enforced case transitions, deadline monitoring, escalation, assignment, and a tamper-resistant activity ledger.
 
+## Live demo
+
+**[Open GovFix](https://govfix-municipal-grievance-workflow.onrender.com/)**
+
+The demo is hosted on Render's free web-service plan, so it may take a minute to wake after being idle. Case and audit data are stored in Turso and persist while the web service sleeps.
+
+Demo password: `GovfixDemo2026!`
+
+| Role | Email |
+| --- | --- |
+| Resident | `citizen@govfix.demo` |
+| Field officer | `officer@govfix.demo` |
+| Ward supervisor | `supervisor@govfix.demo` |
+
+These are shared prototype accounts. Do not enter real resident information.
+
 ## Run locally
 
 Requirements: Node.js 20.9 or newer.
@@ -44,22 +60,14 @@ A deadline is set once when the resident submits the request. When an open reque
 
 ## Data and deployment
 
-Local development uses a SQLite-compatible libSQL file. Hosted instances need a persistent Turso database. To deploy on Render:
+Local development uses a SQLite-compatible libSQL file. The live demo uses a persistent Turso database. This repository includes a Render Blueprint in `render.yaml`; to create another deployment:
 
-1. Create a Turso database and generate an auth token.
-2. In Render, choose **New → Blueprint** and connect this public GitHub repository: `https://github.com/DarshNanavati28/govfix-municipal-grievance-workflow`.
-3. When prompted, enter `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, and a private `GOVFIX_DEMO_PASSWORD`. Render generates the session and scheduler secrets.
-4. Create the Blueprint. Render builds the app and provides its public `onrender.com` URL. Free web services may sleep when idle; Turso keeps the case data persistent.
+1. Create a Turso database and an auth token.
+2. In Render, choose **New → Blueprint** and connect this repository: `https://github.com/DarshNanavati28/govfix-municipal-grievance-workflow`.
+3. Provide `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, and a private `GOVFIX_DEMO_PASSWORD` when prompted. The Blueprint generates `GOVFIX_SESSION_SECRET` and `CRON_SECRET`.
+4. Create the Blueprint. Render builds the app and provides its public URL. On the free plan, the web service may sleep when idle; Turso keeps case and audit data persistent.
 
-The same app can also be deployed to Vercel. Create a database in Turso, then configure these Vercel environment variables for Production and Preview:
-
-- `TURSO_DATABASE_URL`
-- `TURSO_AUTH_TOKEN`
-- `GOVFIX_SESSION_SECRET` — use a unique random value
-- `GOVFIX_DEMO_PASSWORD` — use a unique demo value
-- `CRON_SECRET` — use a unique random value
-
-Then link this project to Vercel and deploy. The daily scheduled handler is `/api/cron/escalate`. A missing or invalid database secret prevents the scheduled endpoint from running.
+The queue checks for overdue requests when it loads. For unattended scheduled checks, configure a scheduler to call `/api/cron/escalate` with `Authorization: Bearer <CRON_SECRET>`. A missing or invalid database secret prevents the endpoint from running.
 
 This is a challenge prototype. Before a real municipal launch, replace the shared demo personas with the institution’s identity provider and connect the app to its approved data-retention, privacy, accessibility, and security controls.
 
