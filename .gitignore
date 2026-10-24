@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+build/
+.env
+.env.*
+!.env.example
+govfix.db
+*.sqlite
+*.sqlite3
+*.log
+.vercel/
+.DS_Store
+Thumbs.db
+
